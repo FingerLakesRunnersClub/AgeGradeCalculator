@@ -1,0 +1,3 @@
+[submodule "Age-Grade-Tables"]
+	path = Age-Grade-Tables
+	url = git@github.com:AlanLyttonJones/Age-Grade-Tables.git
