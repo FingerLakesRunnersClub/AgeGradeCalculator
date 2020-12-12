@@ -10,7 +10,7 @@ namespace FLRC.AgeGradeCalculator
 
         public static double GetAgeGrade(Category category, byte age, double distance, TimeSpan time)
         {
-            if (distance == 0 || age < 5 || age > 100)
+            if (distance < StandardDistances.First() || age < 5 || age > 100)
                 return 0;
 
             var identifier = new Identifier(category, age, distance);

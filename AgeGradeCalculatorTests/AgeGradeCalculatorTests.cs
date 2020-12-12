@@ -68,5 +68,53 @@ namespace FLRC.AgeGradeCalculator.Tests
             //assert
             Assert.Equal(95.4, ageGrade, 1);
         }
+
+        [Fact]
+        public void ReturnsZeroWhenTooYoung()
+        {
+            //arrange
+            const Category category = Category.F;
+            const byte age = 4;
+            const double distance = 3000;
+            var time = TimeSpan.Parse("0:10:00");
+
+            //act
+            var ageGrade = AgeGradeCalculator.GetAgeGrade(category, age, distance, time);
+
+            //assert
+            Assert.Equal(0, ageGrade);
+        }
+
+        [Fact]
+        public void ReturnsZeroWhenTooOld()
+        {
+            //arrange
+            const Category category = Category.F;
+            const byte age = 101;
+            const double distance = 3000;
+            var time = TimeSpan.Parse("0:10:00");
+
+            //act
+            var ageGrade = AgeGradeCalculator.GetAgeGrade(category, age, distance, time);
+
+            //assert
+            Assert.Equal(0, ageGrade);
+        }
+
+        [Fact]
+        public void ReturnsZeroWhenTooShort()
+        {
+            //arrange
+            const Category category = Category.F;
+            const byte age = 18;
+            const double distance = 1500;
+            var time = TimeSpan.Parse("0:04:00");
+
+            //act
+            var ageGrade = AgeGradeCalculator.GetAgeGrade(category, age, distance, time);
+
+            //assert
+            Assert.Equal(0, ageGrade);
+        }
     }
 }
