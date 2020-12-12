@@ -5,13 +5,4 @@
     <RootNamespace>FLRC.AgeGradeCalculator</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Update="F.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="M.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

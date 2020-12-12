@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace FLRC.AgeGradeCalculator.Tests
@@ -7,52 +6,64 @@ namespace FLRC.AgeGradeCalculator.Tests
     public class AgeGradeCalculatorTests
     {
         [Fact]
-        public async Task CanGetAgeGradeForWorldRecordAtStandardDistance()
+        public void CanGetAgeGradeForWorldRecordAtStandardDistance()
         {
             //arrange
-            var calculator = new AgeGradeCalculator(await Loader.Load());
+            const Category category = Category.M;
+            const byte age = 18;
+            const double distance = 1609.344;
+            var time = TimeSpan.Parse("0:03:47");
 
             //act
-            var ageGrade = calculator.GetAgeGrade(Category.M, 18, 1609.344, TimeSpan.Parse("0:03:47"));
+            var ageGrade = AgeGradeCalculator.GetAgeGrade(category, age, distance, time);
 
             //assert
             Assert.Equal(100, ageGrade);
         }
 
         [Fact]
-        public async Task CanGetAgeGradeForStandardDistanceAtMaxFactor()
+        public void CanGetAgeGradeForStandardDistanceAtMaxFactor()
         {
             //arrange
-            var calculator = new AgeGradeCalculator(await Loader.Load());
+            const Category category = Category.M;
+            const byte age = 20;
+            const double distance = 1609.344;
+            var time = TimeSpan.Parse("0:04:15");
 
             //act
-            var ageGrade = calculator.GetAgeGrade(Category.M, 20, 1609.344, TimeSpan.Parse("0:04:15"));
+            var ageGrade = AgeGradeCalculator.GetAgeGrade(category, age, distance, time);
 
             //assert
             Assert.Equal(89.0, ageGrade, 1);
         }
 
         [Fact]
-        public async Task CanGetAgeGradeForStandardDistance()
+        public void CanGetAgeGradeForStandardDistance()
         {
             //arrange
-            var calculator = new AgeGradeCalculator(await Loader.Load());
+            const Category category = Category.M;
+            const byte age = 40;
+            const double distance = 1609.344;
+            var time = TimeSpan.Parse("0:04:30");
 
             //act
-            var ageGrade = calculator.GetAgeGrade(Category.M, 40, 1609.344, TimeSpan.Parse("0:04:30"));
+            var ageGrade = AgeGradeCalculator.GetAgeGrade(category, age, distance, time);
 
             //assert
             Assert.Equal(88.5, ageGrade, 1);
         }
 
         [Fact]
-        public async Task CanGetInterpolatedAgeGrade()
+        public void CanGetInterpolatedAgeGrade()
         {
             //arrange
-            var calculator = new AgeGradeCalculator(await Loader.Load());
+            const Category category = Category.F;
+            const byte age = 50;
+            const double distance = 3000;
+            var time = TimeSpan.Parse("0:10:00");
 
             //act
-            var ageGrade = calculator.GetAgeGrade(Category.F, 50, 3000, TimeSpan.Parse("0:10:00"));
+            var ageGrade = AgeGradeCalculator.GetAgeGrade(category, age, distance, time);
 
             //assert
             Assert.Equal(95.4, ageGrade, 1);
