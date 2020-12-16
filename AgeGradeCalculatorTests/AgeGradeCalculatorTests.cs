@@ -1,10 +1,25 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace FLRC.AgeGradeCalculator.Tests
 {
     public class AgeGradeCalculatorTests
     {
+        public static IEnumerable<object[]> Distances => AgeGradeCalculator.Distances.Select(d => new object[] { d });
+
+        [Theory]
+        [MemberData(nameof(Distances))]
+        public void DistanceIsInRecords(double distance)
+        {
+            //act
+            var identifier = new Identifier(Category.F, 18, distance);
+
+            //assert
+            Assert.Contains(identifier, Records.All.Keys);
+        }
+
         [Fact]
         public void CanGetAgeGradeForWorldRecordAtStandardDistance()
         {
