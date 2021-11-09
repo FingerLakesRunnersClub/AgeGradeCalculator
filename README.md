@@ -16,7 +16,7 @@ A .NET runtime compatible with .NET Standard 2.0
 
 ## Installation
 
-Simple add `AgeGradeCalculator` to your project
+Simply add `AgeGradeCalculator` to your project via NuGet
 
 ## Usage
 
