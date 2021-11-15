@@ -1,8 +1,7 @@
-﻿namespace FLRC.AgeGradeCalculator
+namespace FLRC.AgeGradeCalculator;
+
+public enum Category
 {
-    public enum Category
-    {
-        M = 'M',
-        F = 'F'
-    }
+	M = 'M',
+	F = 'F'
 }

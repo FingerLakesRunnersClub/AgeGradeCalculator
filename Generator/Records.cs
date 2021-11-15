@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 
-namespace FLRC.AgeGradeCalculator
+namespace FLRC.AgeGradeCalculator;
+
+public static class Records
 {
-    public static class Records
-    {
-        public static readonly IImmutableDictionary<Identifier, uint> All = new Dictionary<Identifier, uint>
-        {
-            //
-        }.ToImmutableDictionary();
-    }
+	public static readonly IImmutableDictionary<Identifier, uint> All = new Dictionary<Identifier, uint>
+	{
+		//
+	}.ToImmutableDictionary();
 }
