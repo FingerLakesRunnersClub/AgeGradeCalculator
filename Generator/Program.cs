@@ -1,23 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using FLRC.AgeGradeCalculator;
 using OfficeOpenXml;
 
-namespace Generator;
+namespace FLRC.AgeGradeCalculator.Generator;
 
 public static class Program
 {
-	private const byte distanceRow = 2;
-	private const byte ageCol = 1;
-	private const byte minCol = 2;
-	private const byte maxCol = 22;
+	private const byte DistanceRow = 2;
+	private const byte AgeCol = 1;
+	private const byte MinCol = 2;
+	private const byte MaxCol = 22;
 
-	private static readonly IDictionary<Category, byte> minRow = new Dictionary<Category, byte> { { Category.F, 6 }, { Category.M, 5 } };
-	private static readonly IDictionary<Category, byte> maxRow = new Dictionary<Category, byte> { { Category.F, 101 }, { Category.M, 100 } };
+	private static readonly IDictionary<Category, byte> MinRow = new Dictionary<Category, byte> { { Category.F, 6 }, { Category.M, 5 } };
+	private static readonly IDictionary<Category, byte> MaxRow = new Dictionary<Category, byte> { { Category.F, 101 }, { Category.M, 100 } };
 
 	public static async Task Main(string[] args)
 	{
@@ -36,12 +30,12 @@ public static class Program
 		var sheet = package.Workbook.Worksheets["AgeStanSec"];
 		var distances = GetDistances(sheet);
 
-		for (var row = minRow[category]; row <= maxRow[category]; row++)
+		for (var row = MinRow[category]; row <= MaxRow[category]; row++)
 		{
-			var age = sheet.Cells[row, ageCol].GetValue<byte>();
-			for (var col = minCol; col <= maxCol; col++)
+			var age = sheet.Cells[row, AgeCol].GetValue<byte>();
+			for (var col = MinCol; col <= MaxCol; col++)
 			{
-				var distance = distances[col - minCol];
+				var distance = distances[col - MinCol];
 				var record = sheet.Cells[row, col].GetValue<uint>();
 				dataPoints.Add(new DataPoint
 				{
@@ -59,12 +53,12 @@ public static class Program
 	private static List<double> GetDistances(ExcelWorksheet sheet)
 	{
 		var distances = new List<double>();
-		for (var col = minCol; col <= maxCol; col++)
-			distances.Add(ParseDistance(sheet.Cells[distanceRow, col].GetValue<string>()));
+		for (var col = MinCol; col <= MaxCol; col++)
+			distances.Add(ParseDistance(sheet.Cells[DistanceRow, col].GetValue<string>()));
 		return distances;
 	}
 
-	private static string ParseCategory(Category category)
+	private static string? ParseCategory(Category category)
 	{
 		switch (category)
 		{

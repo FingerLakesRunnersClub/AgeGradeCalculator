@@ -1,5 +1,3 @@
-using System;
-
 namespace FLRC.AgeGradeCalculator;
 
 public class Identifier : Tuple<Category?, byte, double>

@@ -11,6 +11,8 @@
 		<RepositoryUrl>https://github.com/FingerLakesRunnersClub/AgeGradeCalculator</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>

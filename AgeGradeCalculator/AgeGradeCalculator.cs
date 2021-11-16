@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace FLRC.AgeGradeCalculator;
 
 public static class AgeGradeCalculator

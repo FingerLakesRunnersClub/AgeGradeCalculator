@@ -1,7 +1,4 @@
-using System;
-using FLRC.AgeGradeCalculator;
-
-namespace Generator;
+namespace FLRC.AgeGradeCalculator.Generator;
 
 public class DataPoint
 {
