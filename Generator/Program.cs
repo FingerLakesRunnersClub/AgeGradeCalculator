@@ -19,14 +19,19 @@ public static class Program
 		var dataPoints = Enum.GetValues<Category>().SelectMany(DataPointsForCategory);
 		var content = dataPoints.Select(p => $"{{ new Identifier(Category.{p.Category}, {p.Age}, {p.Distance}), {p.Record.TotalSeconds} }}");
 		var fileOutput = await File.ReadAllTextAsync("Records.cs");
-		var newContent = fileOutput.Replace("//", string.Join(",\n            ", content));
+		var newContent = fileOutput.Replace("//", string.Join(",\n\t\t", content));
 		await File.WriteAllTextAsync("../../../../AgeGradeCalculator/Records.cs", newContent);
 	}
 
 	private static List<DataPoint> DataPointsForCategory(Category category)
 	{
 		var dataPoints = new List<DataPoint>();
-		var package = new ExcelPackage(new FileInfo($"../../../../Age-Grade-Tables/2020 Files/{ParseCategory(category)}Road2020.xlsx"));
+		var fileInfo = new FileInfo($"../../../../Age-Grade-Tables/2020 Files/{ParseCategory(category)}Road2020.xlsx");
+		if (!fileInfo.Exists)
+		{
+			throw new FileNotFoundException("Could not load age grade tables from " + fileInfo.FullName);
+		}
+		var package = new ExcelPackage(fileInfo);
 		var sheet = package.Workbook.Worksheets["AgeStanSec"];
 		var distances = GetDistances(sheet);
 
