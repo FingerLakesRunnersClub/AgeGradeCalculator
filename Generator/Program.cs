@@ -17,7 +17,7 @@ public static class Program
 	{
 		ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 		var dataPoints = Enum.GetValues<Category>().SelectMany(DataPointsForCategory);
-		var content = dataPoints.Select(p => $"{{ new Identifier(Category.{p.Category}, {p.Age}, {p.Distance}), {p.Record.TotalSeconds} }}");
+		var content = dataPoints.Select(p => $"{{ (Category.{p.Category}, {p.Age}, {p.Distance}), {p.Record.TotalSeconds} }}");
 		var fileOutput = await File.ReadAllTextAsync("Records.cs");
 		var newContent = fileOutput.Replace("//", string.Join(",\n\t\t", content));
 		await File.WriteAllTextAsync("../../../../AgeGradeCalculator/Records.cs", newContent);

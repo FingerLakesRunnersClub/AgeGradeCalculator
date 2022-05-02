@@ -6,26 +6,26 @@ public static class AgeGradeCalculator
 
 	public static double GetAgeGrade(Category category, byte age, double distance, TimeSpan time)
 	{
-		if (distance < Distances.First() || age < 5 || age > 100)
+		if (distance < Distances.First() || age is < 5 or > 100)
 			return 0;
 
-		var identifier = new Identifier(category, age, distance);
+		var key = (category, age, distance);
 		var best = Distances.Contains(distance)
-			? Records.All[identifier]
-			: Interpolate(identifier);
+			? Records.All[key]
+			: Interpolate(key);
 
 		return 100 * best / time.TotalSeconds;
 	}
 
-	private static double Interpolate(Identifier identifier)
+	private static double Interpolate((Category Category, byte Age, double Distance) key)
 	{
-		var distance = identifier.Distance;
+		var distance = key.Distance;
 		var prev = Distances.Last(d => d <= distance);
 		var next = Distances.First(d => d >= distance);
 		var factor = (distance - prev) / (next - prev);
 
-		var prevAgeGrade = Records.All[new Identifier(identifier.Category, identifier.Age, prev)];
-		var nextAgeGrade = Records.All[new Identifier(identifier.Category, identifier.Age, next)];
+		var prevAgeGrade = Records.All[(key.Category, key.Age, prev)];
+		var nextAgeGrade = Records.All[(key.Category, key.Age, next)];
 
 		return prevAgeGrade * (1 - factor) + nextAgeGrade * factor;
 	}

@@ -11,10 +11,10 @@ public class AgeGradeCalculatorTests
 	public void DistanceIsInRecords(double distance)
 	{
 		//act
-		var identifier = new Identifier(Category.F, 18, distance);
+		var key = (Category.F, (byte)18, distance);
 
 		//assert
-		Assert.Contains(identifier, Records.All.Keys);
+		Assert.Contains(key, Records.All.Keys);
 	}
 
 	[Fact]

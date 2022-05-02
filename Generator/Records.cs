@@ -1,11 +1,9 @@
-using System.Collections.Immutable;
-
 namespace FLRC.AgeGradeCalculator;
 
 public static class Records
 {
-	public static readonly IImmutableDictionary<Identifier, uint> All = new Dictionary<Identifier, uint>
+	public static readonly IReadOnlyDictionary<(Category, byte, double), uint> All = new Dictionary<(Category, byte, double), uint>
 	{
 		//
-	}.ToImmutableDictionary();
+	};
 }
