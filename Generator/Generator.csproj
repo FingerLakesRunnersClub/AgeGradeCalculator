@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <RootNamespace>FLRC.AgeGradeCalculator.Generator</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="EPPlus" Version="6.2.2"/>
+        <PackageReference Include="EPPlus" Version="6.2.3"/>
         <ProjectReference Include="..\AgeGradeCalculator\AgeGradeCalculator.csproj"/>
         <None Include="Records.cs" CopyToOutputDirectory="Always"/>
     </ItemGroup>
