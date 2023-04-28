@@ -19,7 +19,7 @@ public static class Program
 		var dataPoints = Enum.GetValues<Category>().SelectMany(DataPointsForCategory);
 		var content = dataPoints.Select(p => $"{{ (Category.{p.Category}, {p.Age}, {p.Distance}), {p.Record.TotalSeconds} }}");
 		var fileOutput = await File.ReadAllTextAsync("Records.cs");
-		var newContent = fileOutput.Replace("//", string.Join(",\n\t\t", content));
+		var newContent = fileOutput.Replace("// age grades will be generated here", string.Join(",\n\t\t", content));
 		await File.WriteAllTextAsync("../../../../AgeGradeCalculator/Records.cs", newContent);
 	}
 
@@ -75,6 +75,8 @@ public static class Program
 		return null;
 	}
 
+	private static readonly Regex Regex = new(@"([\d\.]+)(.*)", default, TimeSpan.FromSeconds(1));
+
 	private static double ParseDistance(string value)
 	{
 		const string marathon = "42.195 km";
@@ -86,7 +88,7 @@ public static class Program
 				return ParseDistance(marathon) / 2;
 		}
 
-		var split = Regex.Match(value, @"([\d\.]+)(.*)").Groups;
+		var split = Regex.Match(value).Groups;
 		if (split.Count < 2)
 			return 0;
 
