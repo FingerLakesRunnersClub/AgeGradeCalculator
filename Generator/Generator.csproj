@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="EPPlus" Version="7.6.1"/>
+        <PackageReference Include="EPPlus" Version="7.7.0"/>
         <ProjectReference Include="..\AgeGradeCalculator\AgeGradeCalculator.csproj"/>
         <None Include="Records.cs" CopyToOutputDirectory="Always"/>
     </ItemGroup>
