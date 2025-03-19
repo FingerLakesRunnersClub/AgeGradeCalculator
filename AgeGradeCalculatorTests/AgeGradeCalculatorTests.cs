@@ -22,9 +22,9 @@ public class AgeGradeCalculatorTests
 	{
 		//arrange
 		const Category category = Category.M;
-		const byte age = 18;
+		const byte age = 20;
 		const double distance = 1609.344;
-		var time = TimeSpan.Parse("0:03:47");
+		var time = TimeSpan.Parse("0:03:52");
 
 		//act
 		var ageGrade = AgeGradeCalculator.GetAgeGrade(category, age, distance, time);
@@ -46,7 +46,7 @@ public class AgeGradeCalculatorTests
 		var ageGrade = AgeGradeCalculator.GetAgeGrade(category, age, distance, time);
 
 		//assert
-		Assert.Equal(89.0, ageGrade, 1);
+		Assert.Equal(91.0, ageGrade, 1);
 	}
 
 	[Fact]
@@ -62,7 +62,7 @@ public class AgeGradeCalculatorTests
 		var ageGrade = AgeGradeCalculator.GetAgeGrade(category, age, distance, time);
 
 		//assert
-		Assert.Equal(88.5, ageGrade, 1);
+		Assert.Equal(89.3, ageGrade, 1);
 	}
 
 	[Fact]
@@ -78,7 +78,7 @@ public class AgeGradeCalculatorTests
 		var ageGrade = AgeGradeCalculator.GetAgeGrade(category, age, distance, time);
 
 		//assert
-		Assert.Equal(95.4, ageGrade, 1);
+		Assert.Equal(94.1, ageGrade, 1);
 	}
 
 	[Fact]

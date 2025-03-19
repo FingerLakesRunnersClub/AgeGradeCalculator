@@ -6,14 +6,14 @@ namespace FLRC.AgeGradeCalculator.Generator;
 public static class Program
 {
 	private const byte DistanceRow = 2;
+	private const byte MinRow = 6;
+	private const byte MaxRow = 101;
+
 	private const byte AgeCol = 1;
 	private const byte MinCol = 2;
-	private const byte MaxCol = 22;
+	private const byte MaxCol = 23;
 
-	private static readonly IDictionary<Category, byte> MinRow = new Dictionary<Category, byte> { { Category.F, 6 }, { Category.M, 5 } };
-	private static readonly IDictionary<Category, byte> MaxRow = new Dictionary<Category, byte> { { Category.F, 101 }, { Category.M, 100 } };
-
-	public static async Task Main(string[] args)
+	public static async Task Main()
 	{
 		ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 		var dataPoints = Enum.GetValues<Category>().SelectMany(DataPointsForCategory);
@@ -26,7 +26,7 @@ public static class Program
 	private static List<DataPoint> DataPointsForCategory(Category category)
 	{
 		var dataPoints = new List<DataPoint>();
-		var fileInfo = new FileInfo($"../../../../Age-Grade-Tables/2020 Files/{ParseCategory(category)}Road2020.xlsx");
+		var fileInfo = new FileInfo($"../../../../Age-Grade-Tables/2025 Files/{ParseCategory(category)}Road2025.xlsx");
 		if (!fileInfo.Exists)
 		{
 			throw new FileNotFoundException("Could not load age grade tables from " + fileInfo.FullName);
@@ -35,7 +35,7 @@ public static class Program
 		var sheet = package.Workbook.Worksheets["AgeStanSec"];
 		var distances = GetDistances(sheet);
 
-		for (var row = MinRow[category]; row <= MaxRow[category]; row++)
+		for (var row = MinRow; row <= MaxRow; row++)
 		{
 			var age = sheet.Cells[row, AgeCol].GetValue<byte>();
 			for (var col = MinCol; col <= MaxCol; col++)
