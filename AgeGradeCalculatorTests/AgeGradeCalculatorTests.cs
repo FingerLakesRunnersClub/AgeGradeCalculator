@@ -4,10 +4,10 @@ namespace FLRC.AgeGradeCalculator.Tests;
 
 public class AgeGradeCalculatorTests
 {
-	public static IEnumerable<object[]> Distances => AgeGradeCalculator.Distances.Select(d => new object[] { d });
+	public static IEnumerable<object[]> RoadDistances => AgeGradeCalculator.Distances.Select(d => new object[] { d });
 
 	[Theory]
-	[MemberData(nameof(Distances))]
+	[MemberData(nameof(RoadDistances))]
 	public void DistanceIsInRecords(double distance)
 	{
 		//act
