@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using OfficeOpenXml;
+using ClosedXML.Excel;
 
 namespace FLRC.AgeGradeCalculator.Generator;
 
@@ -15,7 +15,6 @@ public static class Program
 
 	public static async Task Main()
 	{
-		ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 		var dataPoints = Enum.GetValues<Category>().SelectMany(DataPointsForCategory);
 		var content = dataPoints.Select(p => $"{{ (Category.{p.Category}, {p.Age}, {p.Distance}), {p.Record.TotalSeconds} }}");
 		var fileOutput = await File.ReadAllTextAsync("Records.cs");
@@ -26,22 +25,18 @@ public static class Program
 	private static List<DataPoint> DataPointsForCategory(Category category)
 	{
 		var dataPoints = new List<DataPoint>();
-		var fileInfo = new FileInfo($"../../../../Age-Grade-Tables/2025 Files/{ParseCategory(category)}Road2025.xlsx");
-		if (!fileInfo.Exists)
-		{
-			throw new FileNotFoundException("Could not load age grade tables from " + fileInfo.FullName);
-		}
-		var package = new ExcelPackage(fileInfo);
-		var sheet = package.Workbook.Worksheets["AgeStanSec"];
+		var file = new FileStream($"../../../../Age-Grade-Tables/2025 Files/{ParseCategory(category)}Road2025.xlsx", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+		var workbook = new XLWorkbook(file);
+		var sheet = workbook.Worksheets.Worksheet("AgeStanSec");
 		var distances = GetDistances(sheet);
 
 		for (var row = MinRow; row <= MaxRow; row++)
 		{
-			var age = sheet.Cells[row, AgeCol].GetValue<byte>();
+			var age = sheet.Cell(row, AgeCol).GetValue<byte>();
 			for (var col = MinCol; col <= MaxCol; col++)
 			{
 				var distance = distances[col - MinCol];
-				var record = sheet.Cells[row, col].GetValue<uint>();
+				var record = sheet.Cell(row, col).GetValue<uint>();
 				dataPoints.Add(new DataPoint
 				{
 					Category = category,
@@ -55,11 +50,11 @@ public static class Program
 		return dataPoints;
 	}
 
-	private static List<double> GetDistances(ExcelWorksheet sheet)
+	private static List<double> GetDistances(IXLWorksheet sheet)
 	{
 		var distances = new List<double>();
 		for (var col = MinCol; col <= MaxCol; col++)
-			distances.Add(ParseDistance(sheet.Cells[DistanceRow, col].GetValue<string>()));
+			distances.Add(ParseDistance(sheet.Cell(DistanceRow, col).GetValue<string>()));
 		return distances;
 	}
 
