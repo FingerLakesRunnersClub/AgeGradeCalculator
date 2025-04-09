@@ -16,15 +16,15 @@ public static class RoadGenerator
 	public static async Task Run()
 	{
 		var dataPoints = Enum.GetValues<Category>().SelectMany(DataPointsForCategory);
-		var content = dataPoints.Select(p => $"{{ (Category.{p.Category}, {p.Age}, {p.Distance}), {p.Record.TotalSeconds} }}");
+		var content = dataPoints.Select(p => $"{{ (Category.{p.Category}, {p.Age}, {p.Event}), {p.Record.TotalSeconds} }}");
 		var fileOutput = await File.ReadAllTextAsync("Road.cs");
 		var newContent = fileOutput.Replace("// age grades will be generated here", string.Join(",\n\t\t", content));
 		await File.WriteAllTextAsync("../../../../AgeGradeCalculator/Road.cs", newContent);
 	}
 
-	private static List<DataPoint> DataPointsForCategory(Category category)
+	private static List<DataPoint<double>> DataPointsForCategory(Category category)
 	{
-		var dataPoints = new List<DataPoint>();
+		var dataPoints = new List<DataPoint<double>>();
 		var file = new FileStream($"../../../../Age-Grade-Tables/2025 Files/{ParseCategory(category)}Road2025.xlsx", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 		var workbook = new XLWorkbook(file);
 		var sheet = workbook.Worksheets.Worksheet("AgeStanSec");
@@ -37,11 +37,11 @@ public static class RoadGenerator
 			{
 				var distance = distances[col - MinCol];
 				var record = sheet.Cell(row, col).GetValue<uint>();
-				dataPoints.Add(new DataPoint
+				dataPoints.Add(new DataPoint<double>
 				{
 					Category = category,
 					Age = age,
-					Distance = distance,
+					Event = distance,
 					Record = TimeSpan.FromSeconds(record)
 				});
 			}
