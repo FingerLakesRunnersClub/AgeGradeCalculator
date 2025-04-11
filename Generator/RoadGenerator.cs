@@ -25,7 +25,7 @@ public static class RoadGenerator
 	private static List<DataPoint<double>> DataPointsForCategory(Category category)
 	{
 		var dataPoints = new List<DataPoint<double>>();
-		var file = new FileStream($"../../../../Age-Grade-Tables/2025 Files/{ParseCategory(category)}Road2025.xlsx", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+		var file = new FileStream($"Data/{ParseCategory(category)}Road2025.xlsx", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 		var workbook = new XLWorkbook(file);
 		var sheet = workbook.Worksheets.Worksheet("AgeStanSec");
 		var distances = GetDistances(sheet);

@@ -16,7 +16,7 @@ public static class TrackGenerator
 		var dataPoints = CalculateAgeGrades(ageFactors, worldRecords);
 		var content = dataPoints.Select(p => $"{{ (Category.{p.Category}, {p.Age}, TrackEvent.{Enum.GetName(p.Event)}), {p.Record.TotalSeconds:F2} }}");
 		var fileOutput = await File.ReadAllTextAsync("Track.cs");
-		var newContent = fileOutput.Replace("// age grades will be generated here", string.Join(",\n\t\t", content));
+		var newContent = fileOutput.Replace("// age grades will be generated here", string.Join($",{Environment.NewLine}\t\t", content));
 		await File.WriteAllTextAsync("../../../../AgeGradeCalculator/Track.cs", newContent);
 	}
 
@@ -29,7 +29,7 @@ public static class TrackGenerator
 	{
 		var factors = new Factors();
 
-		var pdf = PdfDocument.Open("../../../../Age-Grade-Source-Data/2023-Age-Factors-WMA.pdf");
+		var pdf = PdfDocument.Open("Data/2023-Age-Factors-WMA.pdf");
 		var pages = pdf.GetPages().Where(p => p.Text.Contains("One-Year Age Factors", StringComparison.InvariantCultureIgnoreCase));
 
 		var options = new DocstrumBoundingBoxes.DocstrumBoundingBoxesOptions
@@ -62,7 +62,7 @@ public static class TrackGenerator
 
 				for (var x = 1; x < line.Length; x++)
 				{
-					var eventName = events[x - 1].Text.Replace('\n', ' ');
+					var eventName = events[x - 1].Text.Replace(Environment.NewLine, " ").Replace('\n', ' ');
 					if (IgnoreEvent(eventName))
 						continue;
 
@@ -141,8 +141,6 @@ public static class TrackGenerator
 					"Long Hurdles" => TrackEvent._400mH,
 					"3000 Metres Steeplechase" => TrackEvent._3000mSC,
 					"Steeple Chase" => TrackEvent._3000mSC,
-					"Weight" => TrackEvent.WeightThrow,
-					"Hammer" => TrackEvent.HammerThrow,
 					_ => throw new ArgumentException($"'{discipline}' not supported", nameof(discipline))
 				};
 
@@ -169,7 +167,7 @@ public static class TrackGenerator
 
 	private static async Task<JsonElement.ArrayEnumerator> GetWorldRecordsJSON()
 	{
-		var file = await File.ReadAllBytesAsync("../../../../Age-Grade-Source-Data/world-records.json");
+		var file = await File.ReadAllBytesAsync("Data/world-records.json");
 		var reader = new Utf8JsonReader(file);
 		var json = JsonElement.ParseValue(ref reader);
 		return json.GetProperty("data").GetProperty("getRecordsDetailByCategory").EnumerateArray();
