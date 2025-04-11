@@ -9,6 +9,7 @@ public enum TrackEvent
 	_200m,
 	_300m,
 	_400m,
+	_500m,
 	_600m,
 	_800m,
 	_1000m,
@@ -27,14 +28,6 @@ public enum TrackEvent
 	_100mH,
 	_110mH,
 	_400mH,
-	_3000mSC,
-	LongJump,
-	HighJump,
-	TripleJump,
-	PoleVault,
-	ShotPut,
-	HammerThrow,
-	WeightThrow,
-	Discus,
-	Javelin
+	_2000mSC,
+	_3000mSC
 }
