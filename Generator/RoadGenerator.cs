@@ -22,9 +22,9 @@ public static class RoadGenerator
 		await File.WriteAllTextAsync("../../../../AgeGradeCalculator/Road.cs", newContent);
 	}
 
-	private static List<DataPoint<double>> DataPointsForCategory(Category category)
+	private static List<DataPoint<double, TimeSpan>> DataPointsForCategory(Category category)
 	{
-		var dataPoints = new List<DataPoint<double>>();
+		var dataPoints = new List<DataPoint<double, TimeSpan>>();
 		var file = new FileStream($"Data/{ParseCategory(category)}Road2025.xlsx", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 		var workbook = new XLWorkbook(file);
 		var sheet = workbook.Worksheets.Worksheet("AgeStanSec");
@@ -37,7 +37,7 @@ public static class RoadGenerator
 			{
 				var distance = distances[col - MinCol];
 				var record = sheet.Cell(row, col).GetValue<uint>();
-				dataPoints.Add(new DataPoint<double>
+				dataPoints.Add(new DataPoint<double, TimeSpan>
 				{
 					Category = category,
 					Age = age,
