@@ -2,7 +2,7 @@ using Xunit;
 
 namespace FLRC.AgeGradeCalculator.Tests;
 
-public class AgeGradeCalculatorTests
+public class RoadTests
 {
 	public static IEnumerable<object[]> RoadDistances => AgeGradeCalculator.RoadDistances.Select(d => new object[] { d });
 
