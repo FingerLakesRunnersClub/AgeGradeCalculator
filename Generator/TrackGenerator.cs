@@ -19,7 +19,8 @@ public static class TrackGenerator
 			.OrderBy(d => d.Event)
 			.ThenBy(d => d.Category)
 			.ThenBy(d => d.Age);
-		var content = dataPoints.Select(p => $"{{ (Category.{p.Category}, {p.Age}, TrackEvent.{Enum.GetName(p.Event)}), {p.Record.TotalSeconds:F2} }}");
+		var group = dataPoints.GroupBy(p => (p.Category, p.Age, p.Event));
+		var content = group.Select(g => $"{{ (Category.{g.Key.Category}, {g.Key.Age}, TrackEvent.{Enum.GetName(g.Key.Event)}), {g.Min(r => r.Record.TotalSeconds):F2} }}");
 		var fileOutput = await File.ReadAllTextAsync("Track.cs");
 		var newContent = fileOutput.Replace("// age grades will be generated here", string.Join($",{Environment.NewLine}\t\t", content));
 		await File.WriteAllTextAsync("../../../../AgeGradeCalculator/Track.cs", newContent);
