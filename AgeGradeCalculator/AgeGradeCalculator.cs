@@ -8,7 +8,7 @@ public static class AgeGradeCalculator
 
 	public static double GetAgeGrade(Category category, byte age, double distance, TimeSpan time)
 	{
-		if (distance < Distances.First() || age is < 5 or > 100)
+		if (distance < Distances.First() || distance > Distances.Last() || age is < 5 or > 100)
 			return 0;
 
 		var key = (category, age, distance);

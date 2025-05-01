@@ -128,4 +128,20 @@ public class AgeGradeCalculatorTests
 		//assert
 		Assert.Equal(0, ageGrade);
 	}
+
+	[Fact]
+	public void ReturnsZeroWhenTooLong()
+	{
+		//arrange
+		const Category category = Category.F;
+		const byte age = 18;
+		const double distance = 250000;
+		var time = TimeSpan.FromHours(25);
+
+		//act
+		var ageGrade = AgeGradeCalculator.GetAgeGrade(category, age, distance, time);
+
+		//assert
+		Assert.Equal(0, ageGrade);
+	}
 }
