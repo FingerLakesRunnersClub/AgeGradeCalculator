@@ -4,18 +4,21 @@ using UglyToad.PdfPig.DocumentLayoutAnalysis.PageSegmenter;
 
 namespace FLRC.AgeGradeCalculator.Generator;
 
-using Factors = Dictionary<(Category category, byte age, TrackEvent eventName), double>;
-using Records = Dictionary<(Category category, TrackEvent eventName), TimeSpan>;
+using TrackKey = (Category Category, byte Age, TrackEvent Event);
 
 public static class TrackGenerator
 {
 	public static async Task Run()
 	{
-		var worldRecords = GetWorldRecords();
+		var worldRecords = await GetWorldRecords();
+		var openAgeGrades = GetOpenAgeGrades(worldRecords);
+
 		var juniors = GetJuniorAgeGrades();
+
 		var ageFactors = GetAgeFactors();
-		var masters = CalculateAgeGrades(ageFactors, await worldRecords);
-		var dataPoints = masters.Union(await juniors)
+		var masters = CalculateAgeGrades(ageFactors, worldRecords);
+
+		var dataPoints = openAgeGrades.Union(masters).Union(await juniors)
 			.OrderBy(d => d.Event)
 			.ThenBy(d => d.Category)
 			.ThenBy(d => d.Age);
@@ -25,6 +28,9 @@ public static class TrackGenerator
 		var newContent = fileOutput.Replace("// age grades will be generated here", string.Join($",{Environment.NewLine}\t\t", content));
 		await File.WriteAllTextAsync("../../../../AgeGradeCalculator/Track.cs", newContent);
 	}
+
+	private static IEnumerable<DataPoint<TrackEvent>> GetOpenAgeGrades(Dictionary<TrackKey, TimeSpan> worldRecords)
+		=> worldRecords.SelectMany(r => Enumerable.Range(20, 11).Select(age => new DataPoint<TrackEvent> { Category = r.Key.Category, Age = (byte)age, Event = r.Key.Event, Record = r.Value }));
 
 	private static async Task<IEnumerable<DataPoint<TrackEvent>>> GetJuniorAgeGrades()
 	{
@@ -65,14 +71,14 @@ public static class TrackGenerator
 		return dataPoints;
 	}
 
-	private static IEnumerable<DataPoint<TrackEvent>> CalculateAgeGrades(Factors ageFactors, Records worldRecords)
+	private static IEnumerable<DataPoint<TrackEvent>> CalculateAgeGrades(Dictionary<TrackKey, double> ageFactors, Dictionary<TrackKey, TimeSpan> worldRecords)
 		=> ageFactors
-			.Where(f => worldRecords.ContainsKey((f.Key.category, f.Key.eventName)))
-			.Select(f => new DataPoint<TrackEvent> { Age = f.Key.age, Category = f.Key.category, Event = f.Key.eventName, Record = TimeSpan.FromSeconds(worldRecords[(f.Key.category, f.Key.eventName)].TotalSeconds / f.Value) });
+			.Where(f => worldRecords.ContainsKey((f.Key.Category, 0, f.Key.Event)))
+			.Select(f => new DataPoint<TrackEvent> { Age = f.Key.Age, Category = f.Key.Category, Event = f.Key.Event, Record = TimeSpan.FromSeconds(worldRecords[(f.Key.Category, 0, f.Key.Event)].TotalSeconds / f.Value) });
 
-	private static Factors GetAgeFactors()
+	private static Dictionary<TrackKey, double> GetAgeFactors()
 	{
-		var factors = new Factors();
+		var factors = new Dictionary<TrackKey, double>();
 
 		var pdf = PdfDocument.Open("Data/2023-Age-Factors-WMA.pdf");
 		var pages = pdf.GetPages().Where(p => p.Text.Contains("One-Year Age Factors", StringComparison.InvariantCultureIgnoreCase));
@@ -123,9 +129,9 @@ public static class TrackGenerator
 		return factors;
 	}
 
-	private static async Task<Records> GetWorldRecords()
+	private static async Task<Dictionary<TrackKey, TimeSpan>> GetWorldRecords()
 	{
-		var records = new Records();
+		var records = new Dictionary<TrackKey, TimeSpan>();
 		var json = await GetWorldRecordsJSON();
 		foreach (var division in json)
 		{
@@ -141,7 +147,7 @@ public static class TrackGenerator
 
 				var performance = result.GetProperty("performance").GetString() ?? string.Empty;
 				var time = TimeSpan.Parse(performance.Contains(':') ? $"0:{performance}" : $"0:00:{performance}");
-				var key = (category, ParseEvent(discipline, category));
+				var key = (category, (byte)0, ParseEvent(discipline, category));
 				records.TryAdd(key, time);
 			}
 		}
