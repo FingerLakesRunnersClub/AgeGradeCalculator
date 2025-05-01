@@ -1,8 +1,10 @@
 namespace FLRC.AgeGradeCalculator;
 
+using RoadKey = (Category Category, byte Age, double Distance);
+
 public static class Road
 {
-	public static readonly IReadOnlyDictionary<(Category, byte, double), uint> Records = new Dictionary<(Category, byte, double), uint>
+	public static readonly IReadOnlyDictionary<RoadKey, uint> Records = new Dictionary<RoadKey, uint>
 	{
 		{ (Category.F, 5, 1609.344), 350 },
 		{ (Category.F, 5, 5000), 1208 },
