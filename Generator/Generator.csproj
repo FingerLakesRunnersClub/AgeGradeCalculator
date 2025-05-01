@@ -14,5 +14,6 @@
 		<None Include="Data/*" CopyToOutputDirectory="Always"/>
 		<None Include="Road.cs" CopyToOutputDirectory="Always"/>
 		<None Include="Track.cs" CopyToOutputDirectory="Always"/>
+		<None Include="Field.cs" CopyToOutputDirectory="Always"/>
 	</ItemGroup>
 </Project>

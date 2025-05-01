@@ -2,6 +2,7 @@ namespace FLRC.AgeGradeCalculator;
 
 using RoadKey = (Category Category, byte Age, double Distance);
 using TrackKey = (Category Category, byte Age, TrackEvent Event);
+using FieldKey = (Category Category, byte Age, FieldEvent Event);
 
 public static class AgeGradeCalculator
 {
@@ -44,6 +45,28 @@ public static class AgeGradeCalculator
 	}
 
 	private static double Interpolate(IReadOnlyDictionary<TrackKey, double> records, TrackKey key)
+	{
+		const byte pivotAge = 25;
+		var eventRecords = records.Where(r => r.Key.Category == key.Category && r.Key.Event == key.Event).OrderBy(r => r.Key.Age).ToArray();
+		var closest = key.Age > pivotAge
+			? eventRecords.Last(r => r.Key.Age <= key.Age)
+			: eventRecords.First(r => r.Key.Age >= key.Age);
+
+		return closest.Value;
+	}
+
+
+	public static double GetAgeGrade(Category category, byte age, FieldEvent eventName, double performance)
+	{
+		var key = (category, age, eventName);
+		var best = Records.Field.TryGetValue(key, out var match)
+			? match
+			: Interpolate(Records.Field, key);
+
+		return 100 * performance / best;
+	}
+
+	private static double Interpolate(IReadOnlyDictionary<FieldKey, double> records, FieldKey key)
 	{
 		const byte pivotAge = 25;
 		var eventRecords = records.Where(r => r.Key.Category == key.Category && r.Key.Event == key.Event).OrderBy(r => r.Key.Age).ToArray();

@@ -34,7 +34,7 @@ public class TrackTests
 	}
 
 	[Fact]
-	public void CanGetAgeGradeForStandardDistanceAtMaxFactor()
+	public void CanGetAgeGradeForMaxFactor()
 	{
 		//arrange
 		const Category category = Category.M;
@@ -50,7 +50,7 @@ public class TrackTests
 	}
 
 	[Fact]
-	public void CanGetAgeGradeForStandardDistance()
+	public void CanGetAgeGradeForOtherFactor()
 	{
 		//arrange
 		const Category category = Category.M;
@@ -86,7 +86,7 @@ public class TrackTests
 	{
 		//arrange
 		const Category category = Category.M;
-		const byte age = 101;
+		const byte age = 31;
 		const TrackEvent eventName = TrackEvent._50m;
 		var time = TimeSpan.Parse("0:00:11.12");
 

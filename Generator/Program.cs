@@ -6,5 +6,6 @@ public static class Program
 	{
 		await RoadGenerator.Run();
 		await TrackGenerator.Run();
+		await FieldGenerator.Run();
 	}
 }
