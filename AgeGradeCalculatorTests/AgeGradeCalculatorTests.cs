@@ -8,13 +8,13 @@ public class AgeGradeCalculatorTests
 
 	[Theory]
 	[MemberData(nameof(RoadDistances))]
-	public void DistanceIsInRecords(double distance)
+	public void RoadDistanceIsInRecords(double distance)
 	{
 		//act
 		var key = (Category.F, (byte)18, distance);
 
 		//assert
-		Assert.Contains(key, Records.All.Keys);
+		Assert.Contains(key, Records.Road.Keys);
 	}
 
 	[Fact]

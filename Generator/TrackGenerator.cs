@@ -11,13 +11,57 @@ public static class TrackGenerator
 {
 	public static async Task Run()
 	{
-		var worldRecords = await GetWorldRecords();
+		var worldRecords = GetWorldRecords();
+		var juniors = GetJuniorAgeGrades();
 		var ageFactors = GetAgeFactors();
-		var dataPoints = CalculateAgeGrades(ageFactors, worldRecords);
+		var masters = CalculateAgeGrades(ageFactors, await worldRecords);
+		var dataPoints = masters.Union(await juniors)
+			.OrderBy(d => d.Event)
+			.ThenBy(d => d.Category)
+			.ThenBy(d => d.Age);
 		var content = dataPoints.Select(p => $"{{ (Category.{p.Category}, {p.Age}, TrackEvent.{Enum.GetName(p.Event)}), {p.Record.TotalSeconds:F2} }}");
 		var fileOutput = await File.ReadAllTextAsync("Track.cs");
 		var newContent = fileOutput.Replace("// age grades will be generated here", string.Join($",{Environment.NewLine}\t\t", content));
 		await File.WriteAllTextAsync("../../../../AgeGradeCalculator/Track.cs", newContent);
+	}
+
+	private static async Task<IEnumerable<DataPoint<TrackEvent>>> GetJuniorAgeGrades()
+	{
+		var file = await File.ReadAllTextAsync("Data/junior-records.htm");
+		var categories = file.Split("NOTES")[0].Split("BOYS")[1].Split("GIRLS");
+		return ParseJuniorAgeGrades(Category.M, categories[0])
+			.Union(ParseJuniorAgeGrades(Category.F, categories[1]));
+	}
+
+	private static List<DataPoint<TrackEvent>> ParseJuniorAgeGrades(Category category, string data)
+	{
+		var dataPoints = new List<DataPoint<TrackEvent>>();
+
+		var events = data.Split("<b>", StringSplitOptions.TrimEntries);
+		foreach (var e in events.TakeWhile(e => e.Length > 1))
+		{
+			var lines = e.Split(Environment.NewLine);
+			var eventName = lines[0].Replace("</b>", "");
+			if (IgnoreEvent(eventName))
+				continue;
+
+			var discipline = ParseEvent(eventName, category);
+			foreach (var line in lines.Skip(2).TakeWhile(l => l.Length > 11))
+			{
+				var col1 = line[..2].Trim();
+				var col2 = line[3..11].Trim();
+				if (col1.Length == 0 || col2.Length == 0 || col1 == "*" || col1 == "#")
+					continue;
+
+				var age = byte.Parse(col1);
+				var performance = col2.Replace("A", "").Replace("i", "").Trim();
+				var time = TimeSpan.Parse(performance.Contains(':') ? $"0:{performance}" : $"0:00:{performance}");
+				var dataPoint = new DataPoint<TrackEvent> { Category = category, Age = age, Event = discipline, Record = time };
+				dataPoints.Add(dataPoint);
+			}
+		}
+
+		return dataPoints;
 	}
 
 	private static IEnumerable<DataPoint<TrackEvent>> CalculateAgeGrades(Factors ageFactors, Records worldRecords)
@@ -109,40 +153,52 @@ public static class TrackGenerator
 			? trackMatch
 			: Enum.TryParse<TrackEvent>($"{discipline.Replace(" ", "")}", out var fieldMatch)
 				? fieldMatch
-				: discipline switch
+				: FormatEventName(discipline) switch
 				{
-					"50 Metres" => TrackEvent._50m,
-					"55 Metres" => TrackEvent._55m,
-					"60 Metres" => TrackEvent._60m,
-					"100 Metres" => TrackEvent._100m,
-					"200 Metres" => TrackEvent._200m,
-					"300 Metres" => TrackEvent._300m,
-					"400 Metres" => TrackEvent._400m,
-					"600 Metres" => TrackEvent._600m,
-					"800 Metres" => TrackEvent._800m,
-					"1000 Metres" => TrackEvent._1000m,
-					"1500 Metres" => TrackEvent._1500m,
-					"1600 Metres" => TrackEvent._1600m,
-					"Mile" => TrackEvent._1mi,
-					"2000 Metres" => TrackEvent._2000m,
-					"3000 Metres" => TrackEvent._3000m,
-					"3200 Metres" => TrackEvent._3200m,
-					"2 Mile" => TrackEvent._2mi,
-					"5000 Metres" => TrackEvent._5000m,
-					"10,000 Metres" => TrackEvent._10000m,
-					"50 Metres Hurdles" => TrackEvent._50mH,
-					"55 Metres Hurdles" => TrackEvent._55mH,
-					"60 Metres Hurdles" => TrackEvent._60mH,
-					"60m Hurdles" => TrackEvent._60mH,
-					"100 Metres Hurdles" => TrackEvent._100mH,
-					"110 Metres Hurdles" => TrackEvent._110mH,
-					"Short Hurdles" => category == Category.F ? TrackEvent._100mH : TrackEvent._110mH,
-					"400 Metres Hurdles" => TrackEvent._400mH,
-					"Long Hurdles" => TrackEvent._400mH,
-					"3000 Metres Steeplechase" => TrackEvent._3000mSC,
-					"Steeple Chase" => TrackEvent._3000mSC,
+					"50 metres" => TrackEvent._50m,
+					"55 metres" => TrackEvent._55m,
+					"60 metres" => TrackEvent._60m,
+					"100 metres" => TrackEvent._100m,
+					"200 metres" => TrackEvent._200m,
+					"300 metres" => TrackEvent._300m,
+					"400 metres" => TrackEvent._400m,
+					"500 metres" => TrackEvent._500m,
+					"600 metres" => TrackEvent._600m,
+					"800 metres" => TrackEvent._800m,
+					"1000 metres" => TrackEvent._1000m,
+					"1500 metres" => TrackEvent._1500m,
+					"1600 metres" => TrackEvent._1600m,
+					"mile" => TrackEvent._1mi,
+					"1 mile" => TrackEvent._1mi,
+					"2000 metres" => TrackEvent._2000m,
+					"3000 metres" => TrackEvent._3000m,
+					"3200 metres" => TrackEvent._3200m,
+					"2 mile" => TrackEvent._2mi,
+					"2 miles" => TrackEvent._2mi,
+					"5000 metres" => TrackEvent._5000m,
+					"10000 metres" => TrackEvent._10000m,
+					"50 metres hurdles" => TrackEvent._50mH,
+					"55 metres hurdles" => TrackEvent._55mH,
+					"60 metres hurdles" => TrackEvent._60mH,
+					"60m hurdles" => TrackEvent._60mH,
+					"100 metres hurdles" => TrackEvent._100mH,
+					"110 metres hurdles" => TrackEvent._110mH,
+					"short hurdles" => category == Category.F ? TrackEvent._100mH : TrackEvent._110mH,
+					"400 metres hurdles" => TrackEvent._400mH,
+					"long hurdles" => TrackEvent._400mH,
+					"2000 metres steeplechase" => TrackEvent._2000mSC,
+					"3000 metres steeplechase" => TrackEvent._3000mSC,
+					"steeple chase" => TrackEvent._3000mSC,
 					_ => throw new ArgumentException($"'{discipline}' not supported", nameof(discipline))
 				};
+
+	private static string FormatEventName(string discipline)
+		=> Patterns.ExtraSpaceInDistance()
+			.Replace(discipline, "$1")
+			.Replace(",", "")
+			.Split('(')[0]
+			.Trim()
+			.ToLower();
 
 	private static Category ParseCategory(string? category) => category == "men" ? Category.M : Category.F;
 
