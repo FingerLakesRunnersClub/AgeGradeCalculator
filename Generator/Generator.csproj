@@ -8,8 +8,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="ClosedXML" Version="0.105.0"/>
-		<PackageReference Include="PdfPig" Version="0.1.10"/>
+		<PackageReference Include="ClosedXML" Version="0.105.0" />
+		<PackageReference Include="PdfPig" Version="0.1.11" />
 		<ProjectReference Include="..\AgeGradeCalculator\AgeGradeCalculator.csproj"/>
 		<None Include="Data/*" CopyToOutputDirectory="Always"/>
 		<None Include="Road.cs" CopyToOutputDirectory="Always"/>
