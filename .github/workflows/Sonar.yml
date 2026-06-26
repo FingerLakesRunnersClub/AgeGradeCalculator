@@ -1,7 +1,6 @@
 name: Sonar
 
-on:
-  push:
+on: push
 
 jobs:
   Code-Quality:
@@ -14,12 +13,19 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v6
       with:
+        persist-credentials: false
         fetch-depth: 0
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 9.0.x
+        dotnet-version: 10.0.x
+
+    - name: Install Java
+      uses: actions/setup-java@v5
+      with:
+        distribution: microsoft
+        java-version: 21
 
     - name: Install Sonar Scanner
       run: dotnet tool install --global dotnet-sonarscanner
@@ -28,17 +34,18 @@ jobs:
       run: dotnet restore
 
     - name: Start Sonar Analysis
-      run: dotnet-sonarscanner begin /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /o:"fingerlakesrunnersclub" /k:"FingerLakesRunnersClub_AgeGradeCalculator" /d:sonar.exclusions="AgeGradeCalculator/Records.cs" /d:sonar.cs.vstest.reportsPaths="ChallengeDashboard.Tests/TestResults/**/results.trx" /d:sonar.cs.opencover.reportsPaths="AgeGradeCalculatorTests/TestResults/**/coverage.opencover.xml"
+      run: dotnet-sonarscanner begin /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="$SONAR_TOKEN" /o:"fingerlakesrunnersclub" /k:"FingerLakesRunnersClub_AgeGradeCalculator" /d:sonar.exclusions="AgeGradeCalculator/Records.cs" /d:sonar.cs.vstest.reportsPaths="AgeGradeCalculatorTests/TestResults/**/results.trx" /d:sonar.cs.opencover.reportsPaths="AgeGradeCalculatorTests/TestResults/**/coverage.opencover.xml"
+      env:
+        SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
 
     - name: Build
       run: dotnet build --no-restore
-      env:
-        SONAR_DOTNET_ENABLE_CONCURRENT_EXECUTION: true
 
     - name: Test
       run: dotnet test --no-build --logger "trx;LogFileName=results.trx" --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
     - name: Finish Sonar Analysis
-      run: dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+      run: dotnet-sonarscanner end /d:sonar.login="$SONAR_TOKEN"
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
