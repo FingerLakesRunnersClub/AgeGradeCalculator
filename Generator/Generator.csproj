@@ -9,7 +9,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="ClosedXML" Version="0.105.1" />
-		<PackageReference Include="PdfPig" Version="0.1.15" />
+		<PackageReference Include="PdfPig" Version="0.1.16" />
 		<ProjectReference Include="..\AgeGradeCalculator\AgeGradeCalculator.csproj"/>
 		<None Include="Data/*" CopyToOutputDirectory="Always"/>
 		<None Include="Road.cs" CopyToOutputDirectory="Always"/>
